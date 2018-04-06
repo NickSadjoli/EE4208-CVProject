@@ -9,7 +9,7 @@ import time
 import pandas as pd
 import math
 
-from pca import pca_live
+from pca_tidied import pca_live
 
 update = False
 external = False
@@ -183,7 +183,7 @@ def ncc(face, database_pca, average_face, eigenvectors, pp_index):
         #print norm_diff, i, " ** "
         #print reduced_face
         #print database_pca[i]
-        print " "
+        #print " "
         if minimum is None:
             minimum = norm_diff
         elif norm_diff < minimum:

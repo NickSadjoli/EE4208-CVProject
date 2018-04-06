@@ -1,3 +1,9 @@
 # JPEG files that are too big
 *.jpeg
 *.jpg
+
+#zip files
+*.zip
+
+#ras files
+*.ras
