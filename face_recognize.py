@@ -1,3 +1,11 @@
+'''
+Authors: Nicholas Sadjoli and Zhen Yu
+
+Description: Main Computer Vision Script/Application. Can be used to either 'update' database, or 
+             'recognize' people
+'''
+
+
 import numpy as np
 import cv2
 import sys

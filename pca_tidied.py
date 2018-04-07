@@ -1,3 +1,11 @@
+'''
+Authors: Nicholas Sadjoli and Zhen Yu
+
+Description: Library script containing variations of the database training used for 
+             PCA reduction of image database in the CV system
+'''
+
+
 import numpy as np
 import scipy.linalg as la
 import os
