@@ -21,7 +21,7 @@ def database_to_table(database):
     images_table = []
     #needed_faces = 15
     num_of_faces = 0
-    person_index = [None] * needed_faces
+    person_index = []
     #print "Init table" + str(np.shape(images_table)) + str(len(images_table))
 
     for count, p in enumerate(people):
@@ -37,7 +37,8 @@ def database_to_table(database):
         current_path = database + p
         print ("current path " + current_path + ". Counter = " + str(count))
         for image in os.listdir(current_path):
-            person_index[num_of_faces] = p
+            #person_index[num_of_faces] = p
+            person_index.append(p)
             #print image
             image_data = cv2.imread(current_path + '/' + image, 0)
             #print np.shape(image_data)
@@ -63,6 +64,7 @@ def database_to_table(database):
 
                 #alternative way to apepend/concatenate
                 #images_table = np.concatenate((images_table,save_data), axis=0)
-            #num_of_faces += 1
+            num_of_faces += 1
+
     np.savetxt("person_index.csv", person_index, delimiter=',', fmt='%s')
     return images_table
