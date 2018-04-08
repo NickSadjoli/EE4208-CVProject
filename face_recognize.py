@@ -24,9 +24,9 @@ external = False
 update_counter = 0
 counter_flag = True
 
-RED_PCA = "./pca_eigenface_scipy/reduced_final_no_norm_i.csv"
+RED_PCA = "./pca_eigenface_scipy/reduced_final_no_norm.csv"
 AV_FACE = "./average_face.jpg"
-EIGENVECTOR = "./eigenvectors_scipy.csv"
+EIGENVECTOR = "eigenvectors_scipy.csv"
 PEOPLE_INDEX = "./person_index.csv"
 
 
@@ -177,6 +177,7 @@ def update_database(folder):
 def ncc(face, database_pca, average_face, eigenvectors, pp_index):
     face_flat = face.flatten()
     face_flat = np.reshape(face_flat, (1,len(face_flat)) )
+    face_flat = face_flat.astype(np.float64)
     #print np.shape(face_flattened)
     #sys.exit(0)
     reduced_face = pca_live(face_flat, average_face, eigenvectors)
@@ -188,7 +189,7 @@ def ncc(face, database_pca, average_face, eigenvectors, pp_index):
     for i in range(0, num_of_face):
         norm_diff = np.linalg.norm(reduced_face - database_pca[i])
         #norm_diff = norm_cust(reduced_face, database_pca[i])
-        #print norm_diff, i, " ** "
+        print norm_diff, i, " ** "
         #print reduced_face
         #print database_pca[i]
         #print " "
@@ -229,7 +230,7 @@ def recog_mode(database):
 
     pca_database = pd.read_csv(RED_PCA, header=None).as_matrix()
     #average_face = pd.read_csv("./average_face.csv", header=None).as_matrix()
-    average_face = cv2.imread(AV_FACE, 0).flatten()
+    average_face = cv2.imread(AV_FACE, 0).flatten().astype(np.float64)
     eigenvectors = pd.read_csv(EIGENVECTOR, header=None).as_matrix()
     people_index = pd.read_csv(PEOPLE_INDEX, header=None).as_matrix().tolist()
     print "pca_database_size: ", np.shape(pca_database), ". Ave_face size: ", np.shape(average_face), np.shape(eigenvectors)
