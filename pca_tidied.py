@@ -133,10 +133,13 @@ def pca_normal(table):
     average = [None] * col_size
 
     #calculate average values of faces, and the matrix deducted from it
-    mean_deducted = np.zeros(np.shape(table))
+    mean_deducted = np.zeros(np.shape(table), dtype=np.uint8)
+    #mean_deducted = np.zeros(np.shape(table)) #default datatype for numpy's zeros are float64-s, which has found to be problematic with the negative values so far
     for i in range(0, col_size):
         average[i] = np.mean(table[:,i])
         mean_deducted[:,i] = table[:,i] - average[i]
+        #print mean_deducted.dtype, table.dtype, np.array(average).dtype
+        #sys.exit(0)
 
     #write out resulting average face values
     ave = np.array(np.reshape(average, (100,100)))
@@ -148,9 +151,24 @@ def pca_normal(table):
         eigenvect = get_eigenvector_numpy(mean_deducted, normalize)
     elif lib == "scipy":
         eigenvect = get_eigenvector_scipy(mean_deducted, normalize)
-    
+
     #calculate the reduced face matrix and return
     mean_deducted = np.array(mean_deducted)
+
+    print "Shape of eigenvector obtained: ", np.shape(eigenvect)
+    print ""
+    print "Eigenvector obtained in memory:"
+    print eigenvect
+    print ""
+    print "mean deducted for normal process:"
+    print mean_deducted
+    print np.shape(mean_deducted)
+    np.savetxt("mean_deducted_normal.csv", mean_deducted.T, delimiter=",")
+    #print "average in normal process:"
+    #print average
+    np.savetxt("average_normal.csv", average.T, delimiter=",")
+    sys.exit(0)
+
     reduced = np.zeros((np.shape(mean_deducted)[0], np.shape(eigenvect)[1]))
     for i in range(0,faces):
         reduced[i] = np.dot(mean_deducted[i], eigenvect)
@@ -174,14 +192,33 @@ def pca_reduct(table, average_face, eigenvect):
     eigenvector = pd.read_csv(eigenvect,header=None).as_matrix()
     col_size = np.shape(table)[1]
     faces = np.shape(table)[0]
-
+    
     #calculate the matrix deducted from the average values of faces 
     mean_deducted = np.zeros(np.shape(table))
     for i in range(0, col_size):
         mean_deducted[:,i] = table[:,i] - average_face[i]
+        print mean_deducted.dtype, table.dtype, average_face.dtype
+        sys.exit(0)
 
     #calculate the reduced face matrix and return
     mean_deducted = np.array(mean_deducted)
+
+    print "Shape of eigenvector taken: ", np.shape(eigenvector)
+    print ""
+    print "Eigenvector taken for reduct:"
+    print eigenvector
+    print ""
+
+    print "mean deducted for reducted process:"
+    print mean_deducted
+    print np.shape(mean_deducted)
+    np.savetxt("mean_deducted_reduct.csv", mean_deducted.T, delimiter=",")
+
+    print "average for reducted process:"
+    print average_face
+    np.savetxt("average_reduct.csv", average_face.T, delimiter=",")
+    sys.exit(0)
+
     reduced = np.zeros((np.shape(mean_deducted)[0], np.shape(eigenvector)[1]))
     for i in range(0,faces):
         reduced[i] = np.dot(mean_deducted[i], eigenvector)
@@ -199,6 +236,9 @@ def pca_live(table, average_face, eigenvectors):
     for i in range(0,col_size):
         #var_sum[:,i] = vector of the (fi-fmean) value for each ith pixel in a face
         var_sum[:,i] = table[:,i] - average_face[i]
+        print var_sum.dtype, table.dtype, average_face.dtype, table[:,i], average_face[i]
+        np.savetxt("var_sum_test.csv", var_sum[:,i].T, delimiter=",")
+        sys.exit(0)
     
     var_array = np.array(var_sum)
     #reduced = np.zeroes((,col_size))
