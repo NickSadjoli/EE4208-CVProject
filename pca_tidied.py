@@ -98,7 +98,7 @@ def get_eigenvector_scipy(mean_deducted, norm=False):
 
     _, eigenvectors = la.eigh(cov, eigvals=(cols-200,cols-1))
 
-    eigenvectors_sorted = np.copy(eigenvectors)
+    eigenvectors_sorted = np.copy(eigenvectors) * scale
     eigenvectors_normalized = np.copy(eigenvectors_sorted)
     for i in range(0, cols):
             eigenvectors_normalized[i] = eigenvectors_normalized[i]/np.linalg.norm(eigenvectors_normalized[i]) * scale
@@ -140,6 +140,7 @@ def pca_normal(table):
 
     #write out resulting average face values
     ave = np.array(np.reshape(average, (100,100)))
+    np.savetxt("./average_face_test.csv", average, delimiter=',')
     cv2.imwrite("average_face.jpg", ave)
 
     #calculate the eigenvectors for the mean deducted matrix
@@ -195,14 +196,16 @@ def pca_live(table, average_face, eigenvectors):
     num_of_face = np.shape(table)[0]
     #var_sum = [None] * col_size
     var_sum = np.zeros(np.shape(table))
-
+    
     for i in range(0,col_size):
         #var_sum[:,i] = vector of the (fi-fmean) value for each ith pixel in a face
         var_sum[:,i] = table[:,i] - average_face[i]
     
     var_array = np.array(var_sum)
     #reduced = np.zeroes((,col_size))
-    reduced = np.dot(var_array, eigenvectors)
+    reduced = var_array.dot(eigenvectors)
+    #np.savetxt("./reduced_sample.csv", reduced, delimiter=",")
+    #sys.exit(0)
     #print np.shape(reduced), reduced
 
     return reduced

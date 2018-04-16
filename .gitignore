@@ -7,3 +7,6 @@
 
 #ras files
 *.ras
+
+#bmp files
+*.bmp

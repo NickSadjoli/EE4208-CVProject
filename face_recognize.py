@@ -16,6 +16,7 @@ import threading
 import time
 import pandas as pd
 import math
+from sklearn.preprocessing import StandardScaler
 
 from pca_tidied import pca_live
 
@@ -24,9 +25,11 @@ external = False
 update_counter = 0
 counter_flag = True
 
-RED_PCA = "./pca_eigenface_scipy/reduced_final_no_norm_i.csv"
+RED_PCA = "./pca_eigenface_scipy/reduced_final_norm_i.csv"
+#RED_PCA = "./reduced_test_plotlyguide_norm_scaled.csv"
 AV_FACE = "./average_face.jpg"
-EIGENVECTOR = "./eigenvectors_scipy.csv"
+EIGENVECTOR = "./eigenvectors_scipy_normalized.csv"
+#EIGENVECTOR = "./eigenvector_nptest_normalized_scaled.csv"
 PEOPLE_INDEX = "./person_index.csv"
 
 
@@ -137,8 +140,8 @@ def counter_timer():
 #function to update the database folder
 def update_database(folder):
     global external
-    face_cascade = cv2.CascadeClassifier('Haar_Cascades/haarcascade_frontalface_default.xml')
-    eye_cascade = cv2.CascadeClassifier('Haar_Cascades/haarcascade_eye.xml')
+    #face_cascade = cv2.CascadeClassifier('Haar_Cascades/haarcascade_frontalface_default.xml')
+    #eye_cascade = cv2.CascadeClassifier('Haar_Cascades/haarcascade_eye.xml')
 
     photo_count = None
 
@@ -177,6 +180,8 @@ def update_database(folder):
 def ncc(face, database_pca, average_face, eigenvectors, pp_index):
     face_flat = face.flatten()
     face_flat = np.reshape(face_flat, (1,len(face_flat)) )
+    #face_flat = face_flat.astype(np.float64)
+    #face_flat = StandardScaler().fit_transform(face_flat)
     #print np.shape(face_flattened)
     #sys.exit(0)
     reduced_face = pca_live(face_flat, average_face, eigenvectors)
@@ -199,8 +204,16 @@ def ncc(face, database_pca, average_face, eigenvectors, pp_index):
             face_id = i
     #print face_id
     #sys.exit(0)
-    print face_id, ""
-    return pp_index[face_id][0]+","+str(face_id)
+    #print face_id, ""
+    '''
+    if EIGENVECTOR == "./eigenvectors_scipy.csv" :
+        if minimum > 8000:
+            return "Unknown" + str(minimum)
+    elif EIGENVECTOR == "./eigenvectors_scipy_normalized.csv":
+        if minimum > 60000:
+            return "Unknown" + str(minimum)
+    '''
+    return pp_index[face_id][0]+","+str(face_id)+","+str(minimum)
     #sys.exit(0)
 
 def norm_cust(matrix1, matrix2):
@@ -228,13 +241,13 @@ def recog_mode(database):
         print("==> " + p)
 
     pca_database = pd.read_csv(RED_PCA, header=None).as_matrix()
-    #average_face = pd.read_csv("./average_face.csv", header=None).as_matrix()
+    #average_face = pd.read_csv("./average_face_test_ii.csv", header=None).as_matrix()
     average_face = cv2.imread(AV_FACE, 0).flatten()
     eigenvectors = pd.read_csv(EIGENVECTOR, header=None).as_matrix()
     people_index = pd.read_csv(PEOPLE_INDEX, header=None).as_matrix().tolist()
     print "pca_database_size: ", np.shape(pca_database), ". Ave_face size: ", np.shape(average_face), np.shape(eigenvectors)
 
-    face_cascade = cv2.CascadeClassifier('Haar_Cascades/haarcascade_frontalface_default.xml')
+    face_cascade = cv2.CascadeClassifier('Haar_Cascades/haarcascade_frontalface_default.xml')#,'Haar_Cascades/haarcascade_eye.xml')
     font = cv2.FONT_HERSHEY_SIMPLEX
     #eye_cascade = cv2.CascadeClassifier('Haar_Cascades/haarcascade_eye.xml')
 
@@ -267,6 +280,7 @@ def recog_mode(database):
 
         #collect actual faces from the frame
         for (x,y,w,h) in faces_coor:
+            #print faces_coor
 
             #append actual faces from a frame to a list, via coordinate and width/height adjustment
             face = gray[y : y + h, x : x + w]

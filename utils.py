@@ -38,7 +38,7 @@ def database_to_table(database):
         print ("current path " + current_path + ". Counter = " + str(count))
         for image in os.listdir(current_path):
             #person_index[num_of_faces] = p
-            person_index.append(p)
+            person_index.append(image.split('.')[0])
             #print image
             image_data = cv2.imread(current_path + '/' + image, 0)
             #print np.shape(image_data)
