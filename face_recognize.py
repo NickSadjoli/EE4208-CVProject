@@ -1,5 +1,5 @@
 '''
-Authors: Nicholas Sadjoli and Zhen Yu
+Authors: Nicholas Sadjoli and Chan Zhen Yue
 
 Description: Main Computer Vision Script/Application. Can be used to either 'update' database, or 
              'recognize' people
@@ -18,18 +18,17 @@ import pandas as pd
 import math
 from sklearn.preprocessing import StandardScaler
 
-from pca_tidied import pca_live
+from pca import pca_live
 
 update = False
 external = False
 update_counter = 0
 counter_flag = True
+threshold_enable = False
 
-RED_PCA = "./pca_eigenface_scipy/reduced_final_norm_i.csv"
-#RED_PCA = "./reduced_test_plotlyguide_norm_scaled.csv"
-AV_FACE = "./average_face.jpg"
-EIGENVECTOR = "./eigenvectors_scipy_normalized.csv"
-#EIGENVECTOR = "./eigenvector_nptest_normalized_scaled.csv"
+RED_PCA = "./reduced.csv"
+AV_FACE = "./average_face_test_ii.csv"
+EIGENVECTOR = "./eigenvector_nptest.csv"
 PEOPLE_INDEX = "./person_index.csv"
 
 
@@ -37,10 +36,12 @@ PEOPLE_INDEX = "./person_index.csv"
 def parse_arguments():
     global external
     global update
+    global threshold_enable
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", help="Action that you want to do with the program. Options are to 'update' database or to 'recognize' faces")
     parser.add_argument("-c", "--camera", type=int, choices=[0,1], help="Use external or internal webcam. '0' is for internal, and '1' is for external")
     #parser.add_argument("-ex", "--excam", type=str, choices=["True","False"], help = "Usage of internal or external camera. 'True' for external, and 'False' for internal")
+    parser.add_argument("-t", "--threshold", type=int, choices=[0,1], help="Use threshold or not")
     args = parser.parse_args()
     if (args.mode == "update") or (args.mode == "recognize"):
         if args.mode == "update":
@@ -56,7 +57,10 @@ def parse_arguments():
     if args.camera == 1:
         external = True
     else:
-        external = False     
+        external = False
+
+    if args.threshold == 1:
+        threshold_enable = True     
     
 
 #main loop for the database updating function
@@ -205,14 +209,16 @@ def ncc(face, database_pca, average_face, eigenvectors, pp_index):
     #print face_id
     #sys.exit(0)
     #print face_id, ""
-    '''
-    if EIGENVECTOR == "./eigenvectors_scipy.csv" :
-        if minimum > 8000:
-            return "Unknown" + str(minimum)
-    elif EIGENVECTOR == "./eigenvectors_scipy_normalized.csv":
-        if minimum > 60000:
-            return "Unknown" + str(minimum)
-    '''
+    if threshold_enable:
+        #if EIGENVECTOR == "./eigenvectors_scipy.csv" :
+        if EIGENVECTOR == "./eigenvector_nptest.csv":
+            if minimum > 4300:
+                return "Unknown" + str(minimum)
+        #elif EIGENVECTOR == "./eigenvectors_scipy_normalized.csv":
+        elif EIGENVECTOR == "./eigenvector_nptest_normalized.csv":
+            if minimum > 50000:
+                return "Unknown" + str(minimum)
+
     return pp_index[face_id][0]+","+str(face_id)+","+str(minimum)
     #sys.exit(0)
 
@@ -241,8 +247,7 @@ def recog_mode(database):
         print("==> " + p)
 
     pca_database = pd.read_csv(RED_PCA, header=None).as_matrix()
-    #average_face = pd.read_csv("./average_face_test_ii.csv", header=None).as_matrix()
-    average_face = cv2.imread(AV_FACE, 0).flatten()
+    average_face = pd.read_csv(AV_FACE, header=None).as_matrix()
     eigenvectors = pd.read_csv(EIGENVECTOR, header=None).as_matrix()
     people_index = pd.read_csv(PEOPLE_INDEX, header=None).as_matrix().tolist()
     print "pca_database_size: ", np.shape(pca_database), ". Ave_face size: ", np.shape(average_face), np.shape(eigenvectors)

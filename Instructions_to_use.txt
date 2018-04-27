@@ -1,0 +1,37 @@
+Authors: Nicholas Sadjoli and Chan Zhen Yue
+
+
+I. System Components:
+Face Recognition code was written and tested for Ubuntu 16.04 LTS OS, using Python. The system currently consists of the following main codes necessary for it to work:
+	1. The database folder
+	2. face_recognize.py -> script used for both database updating, as well as for face recognition part
+	3. pca.py -> Main PCA library created, containing several prototypes/version of the pca. pca_live function in particular is needed for live face reduction process during recognition part.
+	4. pca_notebook.ipynb -> A notebook code of the pca used for the system, used to reduce the database into a reduced table. Need installation of iPython and jupyter notebook to run the notebook code (see Things to Install section). 
+	Produces several reduced table versions, including:
+		a. reduced following normal pca procedure
+		b. reduced but having its eigenvector scaled
+		c. reduced with normalization of the eigenvector
+		d. reduced with eigenvector normalization and scaling included
+	5. Eigenvectors produced during pca process. Several versions exist following the versions listed in I.4. Need to use eigenvector for live face reduction as well. As the eigenvectors are too large, it is not included by default in the zip file, and thus need to be produced by running one of the scripts.
+	6. reduced faces. Several versions of these exist, depending on which one you want to use during recognition, as per explained in line I.4.
+	7. Average_face_ii.jpg, and average_face_ii.csv -> The average face produced during pca process. Both image and table version exist. Currently recognition system is set to use the table for better precision. However, direct usage from image should also be okay wtith proper data type conversion.
+	8. person_index.csv -> Table to help match index obtained during recognition with the person in database.
+	9. utils.py -> Library script containing the process which describes transformation of database into an image table.
+
+
+II. Things to Install:
+Before you can use the system, you need to install the Python libraries required to compile and run them. things_to_install.txt contains the library and versions that are used when testing and creating this system. To install them to your computer, type 'pip install things_to_install.txt' in the project folder.
+
+
+III. Instructions to use the entire PCA/Face Recognition system:
+	A. PCA
+	Depending on which version of the pca you use, instructions on how to use it are below:
+		1. pca.py
+			a. Prepare two folders, named 'pca_eigenface' and 'pca_eigenface_scipy'
+			b. Run it by typing 'pyton pca.py' in a Terminal/Command Prompt. You can set some flags in the terminal to enable choice of library to use. Details are explained further in the python code itself.
+		2. pca_notebook.py
+			a. Make sure iPython and Jupyter-notebook are already installed
+			b. run the script by typing 'ipython notebook pca_notebook.py' in the Terminal. A dashboard containing details of the code and cells should pop up in the default web browser. Run all cells to reduce the image database.
+
+	B. Live Face Recognition (face_recognize.py)
+	It has 2 modes: database 'update' or to live 'recognize'. Specify which mode to use by typing 'python face_recognize.py update' or 'python face_recognize.py recognize'. Additionally, you can set a -c flag to specify which camera (external or internal webcam) to use.
